@@ -3,7 +3,9 @@
 class GeminiAPI {
     constructor(apiKey) {
         this.apiKey = apiKey;
-        this.baseURL = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent';
+        this.model = 'gemini-1.5-flash';
+        this.baseURL = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent`;
+        console.log('GeminiAPI initialized with model:', this.model);
     }
 
     async summarize(text, options = {}) {
