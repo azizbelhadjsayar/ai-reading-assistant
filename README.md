@@ -1,247 +1,232 @@
-# 🛡️ SecureNav - Privacy & Security Companion
+# 🤖 AI Reading Assistant
 
 <div align="center">
 
-![SecureNav Logo](icons/icon128.png)
+**Smart Chrome extension that uses AI to summarize articles, extract key points, and enhance your reading experience**
 
-**Extension Chrome pour l'analyse de sécurité et de confidentialité en temps réel**
-
-*Développé pour le hackathon NEVERHACK 2025*
+*Developed for NEVERHACK Hackathon 2025*
 
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-blue.svg)](https://developer.chrome.com/docs/extensions/mv3/intro/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Open Source](https://img.shields.io/badge/Open%20Source-Yes-green.svg)](https://github.com)
+[![AI Powered](https://img.shields.io/badge/AI-Gemini-orange.svg)](https://ai.google.dev/)
 
 </div>
 
 ---
 
-## 📋 À Propos
+## 🎯 Problem & Solution
 
-**SecureNav** est une extension Chrome moderne qui analyse instantanément la sécurité et la confidentialité des sites web que vous visitez. Conçue avec un focus cybersécurité pour répondre au défi NEVERHACK, elle offre des insights en temps réel sur :
+**The Problem**: Information overload. Too many long articles, not enough time to read them all.
 
-- ✅ **Protocole HTTPS** - Vérification de la sécurité de la connexion
-- 🍪 **Cookies & Trackers** - Détection et comptage des cookies
-- 📝 **Formulaires** - Analyse de sécurité des formulaires de saisie
-- 🌐 **Resources Tierces** - Identification des domaines tiers
-- 📊 **Score de Sécurité** - Évaluation globale de 0 à 100
+**Our Solution**: AI Reading Assistant analyzes articles and provides instant, intelligent summaries powered by Google Gemini AI.
 
-## 🎯 Problème Résolu
+## ✨ Features
 
-Les utilisateurs naviguent souvent sans connaître le niveau de sécurité des sites qu'ils visitent. Ils peuvent involontairement :
-- Soumettre des données sensibles sur des connexions HTTP non chiffrées
-- Être suivis par de nombreux trackers sans le savoir
-- Accéder à des sites avec une configuration de sécurité médiocre
+### 🤖 AI-Powered Summarization
+- **Gemini AI Integration**: Uses Google's Gemini 1.5 Flash for high-quality summaries
+- **Multiple Lengths**: Choose short, medium, or long summaries
+- **Fallback Mode**: Extractive summarization works without API key
 
-**SecureNav** résout ce problème en fournissant des informations de sécurité instantanées et compréhensibles.
+### 📝 Smart Content Extraction
+- Automatically detects articles on web pages
+- Extracts clean text using Mozilla Readability
+- Gets metadata (title, author, word count, read time)
 
-## ✨ Fonctionnalités
+### 💡 Key Points Extraction
+- Automatically extracts 3-5 key takeaways
+- Bullet-point format for quick scanning
+- Perfect for busy readers
 
-### Analyse en Temps Réel
-- 🔍 **Vérification HTTPS automatique** pour chaque page visitée
-- 📈 **Score de sécurité dynamique** calculé selon plusieurs critères
-- 🎨 **Interface moderne** avec thème cybersécurité (glassmorphism, gradients)
-- 🔔 **Badge visuel** avec code couleur (A/B/C/D) sur l'icône de l'extension
+### 🎧 Text-to-Speech
+- Listen to summaries while multitasking
+- Built-in browser TTS (no external dependencies)
+- Play/pause controls
 
-### Indicateurs Détaillés
-- **HTTPS Status** : Indique si la connexion est sécurisée
-- **Cookies** : Nombre de cookies détectés sur la page
-- **Trackers Tiers** : Nombre de domaines tiers chargeant du contenu
-- **Formulaires** : Détection de formulaires non sécurisés
+### 💾 Save & Organize
+- Save your favorite summaries for later
+- Persistent local storage
+- Quick access to reading history
 
-### Recommandations
-- ⚠️ Alertes pour les connexions HTTP non sécurisées
-- 📋 Conseils de sécurité personnalisés selon le contexte
-- 🚨 Détection de contenu mixte (HTTP sur HTTPS)
+### 🎨 Beautiful UI
+- Clean, reading-focused design
+- Professional typography (Inter + Merriweather)
+- Smooth animations and transitions
 
 ## 🚀 Installation
 
-### Installation en Mode Développeur
+### Option 1: Load Unpacked (Developer Mode)
 
-1. **Télécharger l'extension**
+1. **Download the extension**
    ```bash
-   git clone https://github.com/votre-username/securenav.git
-   cd securenav
+   git clone https://github.com/votre-username/ai-reading-assistant.git
+   cd ai-reading-assistant
    ```
 
-2. **Charger dans Chrome**
-   - Ouvrez Chrome et allez à `chrome://extensions/`
-   - Activez le **Mode développeur** (coin supérieur droit)
-   - Cliquez sur **Charger l'extension non empaquetée**
-   - Sélectionnez le dossier `extension chrome`
+2. **Open Chrome Extensions**
+   - Navigate to `chrome://extensions/`
+   - Enable **Developer mode** (toggle in top right)
 
-3. **C'est prêt !**
-   - L'icône SecureNav apparaît dans la barre d'outils
-   - Visitez n'importe quel site pour voir l'analyse
+3. **Load Extension**
+   - Click **Load unpacked**
+   - Select the `extension chrome` folder
 
-### Installation depuis le Chrome Web Store
-*À venir - Après publication sur le Chrome Web Store*
+4. **Configure API Key (Optional but Recommended)**
+   - Click extension icon → Settings
+   - Get free API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Paste and save
 
-## 💻 Utilisation
+### Option 2: Chrome Web Store
+*Coming soon after hackathon review*
 
-1. **Naviguez sur n'importe quel site web**
-2. **Cliquez sur l'icône SecureNav** dans la barre d'outils
-3. **Consultez l'analyse de sécurité** :
-   - Score global (0-100)
-   - Détails par catégorie
-   - Recommandations personnalisées
+## 💻 Usage
 
-### Interprétation du Score
+1. **Navigate to an article** (news, blog, Wikipedia, etc.)
+2. **Click the extension icon** 📖
+3. **Click "Summarize"** to generate AI summary
+4. **Optional actions**:
+   - 🎧 Click "Listen" for text-to-speech
+   - 💾 Click "Save" to store summary
+   - ⚙️ Access settings to configure preferences
 
-| Score | Badge | Signification |
-|-------|-------|---------------|
-| 80-100 | 🟢 A | Excellente sécurité |
-| 60-79 | 🔵 B | Bonne sécurité |
-| 40-59 | 🟠 C | Sécurité moyenne |
-| 0-39 | 🔴 D | Sécurité faible |
+## 🔑 API Key Setup
 
-## 🏗️ Architecture Technique
+### Get Free Gemini API Key
 
-### Stack Technique
-- **Manifest Version** : V3 (dernière norme Chrome)
-- **Frontend** : HTML5, CSS3 (Glassmorphism), Vanilla JavaScript
-- **APIs utilisées** :
-  - `chrome.tabs` - Gestion des onglets
-  - `chrome.storage` - Stockage local
-  - `chrome.scripting` - Injection de scripts
-  - `chrome.runtime` - Messagerie interne
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Sign in with Google account
+3. Click "Create API Key"
+4. Copy the key
 
-### Structure du Projet
+### Configure Extension
+
+1. Click extension icon → ⚙️ Settings
+2. Paste API key in "Gemini API Key" field
+3. Click "Save API Key"
+
+**Free Tier Limits**:
+- 15 requests per minute
+- 1,500 requests per day
+- Perfect for personal use!
+
+**No API Key?** The extension still works with extractive summarization (no AI).
+
+## 🏗️ Technical Architecture
+
+### Tech Stack
+- **Manifest V3** (latest Chrome extension standard)
+- **Gemini AI API** (Google's generative AI)
+- **Mozilla Readability** (article extraction)
+- **Web Speech API** (text-to-speech)
+- **Vanilla JavaScript** (no frameworks)
+
+### File Structure
 ```
 extension chrome/
-├── manifest.json          # Configuration Manifest V3
-├── background.js          # Service worker (gestion badges)
-├── content.js             # Script d'analyse de page
-├── popup.html             # Interface utilisateur
-├── popup.css              # Styles (thème cyber)
-├── popup.js               # Logique du popup
-├── icons/                 # Icônes de l'extension
-│   ├── icon16.png
-│   ├── icon48.png
-│   └── icon128.png
-├── README.md              # Documentation
-├── LICENSE                # Licence MIT
-└── .gitignore             # Fichiers ignorés
+├── manifest.json          # Extension configuration
+├── background.js          # Service worker
+├── content.js             # Article extraction
+├── popup.html/css/js      # Main UI
+├── options.html/js        # Settings page
+├── api.js                 # Gemini API wrapper
+├── summarizer.js          # Extractive fallback
+├── libs/
+│   └── readability.js     # Mozilla Readability
+└── icons/                 # Extension icons
 ```
 
-### Flux de Données
-1. **Content Script** (`content.js`) analyse la page active
-2. Les données sont envoyées au **Background Script** (`background.js`)
-3. Le **Background** met à jour le badge et stocke les données
-4. Le **Popup** (`popup.js`) récupère et affiche les résultats
+### How It Works
 
-## 🔒 Permissions
-
-L'extension demande les permissions suivantes :
-
-- `activeTab` : Analyser l'onglet actif
-- `storage` : Sauvegarder les préférences utilisateur
-- `scripting` : Injecter le script d'analyse
-- `<all_urls>` : Analyser n'importe quel site web
-
-**Note** : Aucune donnée n'est envoyée à des serveurs externes. Tout est traité localement.
-
-## 🛠️ Développement
-
-### Prérequis
-- Google Chrome ou navigateur basé sur Chromium
-- Éditeur de code (VS Code recommandé)
-- Git pour le versioning
-
-### Développement Local
-
-1. **Modifier le code**
-   - Éditez les fichiers selon vos besoins
-   - Testez dans Chrome Developer Mode
-
-2. **Recharger l'extension**
-   - Allez à `chrome://extensions/`
-   - Cliquez sur le bouton de rechargement
-
-3. **Déboguer**
-   - **Background Script** : Cliquez sur "Service worker" dans chrome://extensions
-   - **Popup** : Clic droit sur popup → Inspecter
-   - **Content Script** : Console de la page web
-
-### Contribuer
-
-Les contributions sont les bienvenues ! Pour contribuer :
-
-1. Fork le projet
-2. Créez une branche (`git checkout -b feature/AmazingFeature`)
-3. Committez vos changements (`git commit -m 'Add: Amazing Feature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrez une Pull Request
-
-**Conventions de commit** :
-- `Add:` Nouvelle fonctionnalité
-- `Fix:` Correction de bug
-- `Update:` Mise à jour de code existant
-- `Docs:` Documentation
-- `Style:` Mise en forme (CSS, design)
-
-## 📝 Roadmap
-
-### Version 1.0 (Actuelle)
-- ✅ Analyse HTTPS
-- ✅ Détection cookies
-- ✅ Analyse formulaires
-- ✅ Score de sécurité
-- ✅ Interface moderne
-
-### Version 1.1 (À venir)
-- [ ] Analyse des en-têtes de sécurité (CSP, HSTS, etc.)
-- [ ] Historique des sites visités avec scores
-- [ ] Exportation de rapports PDF
-- [ ] Mode sombre/clair
-- [ ] Support multilingue (EN, ES, DE)
-
-### Version 2.0 (Futur)
-- [ ] Intelligence artificielle pour détection d'anomalies
-- [ ] Base de données de sites malveillants
-- [ ] Synchronisation multi-appareils
-- [ ] API publique pour développeurs
-
-## 🏆 Hackathon NEVERHACK
-
-Cette extension a été développée pour le défi **"La Ligue des Extensions"** du hackathon NEVERHACK, avec les objectifs suivants :
-
-- ✅ Extension Manifest V3 compatible tous navigateurs modernes
-- ✅ Solution innovante à un problème réel de navigation
-- ✅ Code source open source sur GitHub
-- ✅ Bonnes pratiques de développement (commits clairs, documentation)
-- ✅ Thématique sécurité alignée avec NEVERHACK
-
-## 📄 Licence
-
-Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
-
-```
-MIT License
-
-Copyright (c) 2025 NEVERHACK Hackathon Team
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction...
+```mermaid
+graph LR
+    A[User visits article] --> B[Content Script detects]
+    B --> C[Extract with Readability]
+    C --> D[Store article data]
+    E[User clicks Summarize] --> F{API Key?}
+    F -->|Yes| G[Gemini AI]
+    F -->|No| H[Extractive Summary]
+    G --> I[Display Summary]
+    H --> I
+    I --> J[TTS / Save options]
 ```
 
-## 👥 Auteurs
+## 🎨 Screenshots
 
-Développé avec ❤️ pour le hackathon NEVERHACK 2025
+*Coming soon - Load extension to see it in action!*
 
-## 🙏 Remerciements
+## 🛠️ Development
 
-- **NEVERHACK** pour l'organisation du hackathon
-- La communauté Chrome Extensions pour la documentation
-- Tous les contributeurs open source
+### Prerequisites
+- Chrome or Chromium-based browser
+- Text editor (VS Code recommended)
+- Git
+
+### Local Development
+
+1. **Clone repository**
+   ```bash
+   git clone <repo-url>
+   cd extension chrome
+   ```
+
+2. **Load in Chrome**
+   - Go to `chrome://extensions/`
+   - Enable Developer mode
+   - Load unpacked
+
+3. **Make changes**
+   - Edit files
+   - Click reload button in `chrome://extensions/`
+
+### Debug
+
+- **Background Script**: Click "Service worker" in extensions page
+- **Popup**: Right-click popup → Inspect
+- **Content Script**: F12 on any webpage
+
+## 🤝 Contributing
+
+Contributions welcome! Please:
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add: Amazing Feature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+## 📜 License
+
+This project is licensed under the **MIT License** - see [LICENSE](LICENSE) file.
+
+## 🏆 NEVERHACK Hackathon 2025
+
+This extension was created for the **"La Ligue des Extensions"** challenge at NEVERHACK Hackathon.
+
+**Requirements Met**:
+- ✅ Manifest V3 Chrome extension
+- ✅ Solves real problem (information overload)
+- ✅ Open source on GitHub
+- ✅ Clean code and documentation
+- ✅ Innovative use of AI technology
+
+## 🙏 Acknowledgments
+
+- **NEVERHACK** for organizing the hackathon
+- **Google** for Gemini AI API
+- **Mozilla** for Readability library
+- Open source community
+
+## 📞 Support
+
+Found a bug? Have a feature request?
+- Open an [Issue](https://github.com/votre-username/ai-reading-assistant/issues)
+- Or contact: your-email@example.com
 
 ---
 
 <div align="center">
 
-**Made with 🛡️ for a safer web**
+**Made with 🤖 for smarter reading**
 
-[Documentation](README.md) • [Issues](https://github.com/votre-username/securenav/issues) • [Contribuer](CONTRIBUTING.md)
+[Documentation](README.md) • [Report Bug](issues) • [Request Feature](issues)
 
 </div>

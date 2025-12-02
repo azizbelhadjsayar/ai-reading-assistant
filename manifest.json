@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "SecureNav - Privacy & Security Companion",
+  "name": "AI Reading Assistant",
   "version": "1.0.0",
-  "description": "Analyze website security, detect trackers, and protect your privacy with real-time security insights.",
+  "description": "Smart AI-powered reading assistant. Summarize articles, extract key points, and listen with text-to-speech.",
   "author": "NEVERHACK Hackathon Team",
   "icons": {
     "16": "icons/icon16.png",
@@ -15,24 +15,31 @@
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
-    }
+    },
+    "default_title": "AI Reading Assistant"
   },
   "background": {
     "service_worker": "background.js"
   },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "run_at": "document_end"
+      "js": ["libs/readability.js", "content.js"],
+      "run_at": "document_idle"
     }
   ],
   "permissions": [
     "activeTab",
     "storage",
-    "scripting"
+    "scripting",
+    "sidePanel",
+    "tts"
   ],
   "host_permissions": [
     "<all_urls>"
-  ]
+  ],
+  "options_page": "options.html"
 }

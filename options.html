@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Reading Assistant - Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f9fafb;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .settings-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 32px;
+        }
+
+        .section {
+            margin-bottom: 32px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: #374151;
+            margin-bottom: 12px;
+        }
+
+        .help-text {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #6366f1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4f46e5;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+
+        .link {
+            color: #6366f1;
+            text-decoration: none;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .stat-card {
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #6366f1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="settings-container">
+        <h1>⚙️ Settings</h1>
+        <p class="subtitle">Configure your AI Reading Assistant</p>
+
+        <!-- API Key Section -->
+        <div class="section">
+            <h2>🔑 Gemini API Key</h2>
+            <p class="help-text">
+                Get your free API key from <a href="https://makersuite.google.com/app/apikey" target="_blank"
+                    class="link">Google AI Studio</a>.
+                Free tier includes 15 requests/minute and 1,500 requests/day.
+            </p>
+
+            <div class="form-group">
+                <label for="apiKey">API Key</label>
+                <input type="password" id="apiKey" placeholder="Enter your Gemini API key">
+            </div>
+
+            <div id="apiStatus"></div>
+
+            <button class="btn btn-primary" id="saveApiKey">Save API Key</button>
+        </div>
+
+        <!-- Summarization Preferences -->
+        <div class="section">
+            <h2>📝 Summarization Preferences</h2>
+
+            <div class="form-group">
+                <label for="summaryLength">Summary Length</label>
+                <select id="summaryLength">
+                    <option value="short">Short (2-3 sentences)</option>
+                    <option value="medium" selected>Medium (1 paragraph)</option>
+                    <option value="long">Long (2-3 paragraphs)</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary" id="savePreferences">Save Preferences</button>
+        </div>
+
+        <!-- Statistics -->
+        <div class="section">
+            <h2>📊 Statistics</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalSummaries">0</div>
+                    <div class="stat-label">Saved Summaries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalArticles">0</div>
+                    <div class="stat-label">Articles Read</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Management -->
+        <div class="section">
+            <h2>🗑️ Data Management</h2>
+            <p class="help-text">Clear all saved summaries and reset settings.</p>
+            <button class="btn btn-secondary" id="clearData">Clear All Data</button>
+        </div>
+    </div>
+
+    <script src="options.js"></script>
+</body>
+
+</html>

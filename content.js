@@ -1,195 +1,96 @@
-// SecureNav Content Script
-// Analyzes page security features and sends data to background script
+// AI Reading Assistant Content Script
+// Extracts article content using Mozilla Readability
 
 (function () {
     'use strict';
 
-    // Analyze page security
-    function analyzeSecurity() {
-        const securityData = {
-            url: window.location.href,
-            protocol: window.location.protocol,
-            isHTTPS: window.location.protocol === 'https:',
-            timestamp: new Date().toISOString(),
-
-            // Security headers (will be populated from network request if available)
-            headers: analyzeHeaders(),
-
-            // Cookies
-            cookies: analyzeCookies(),
-
-            // Forms
-            forms: analyzeForms(),
-
-            // Mixed content
-            mixedContent: checkMixedContent(),
-
-            // Third-party resources
-            thirdParty: analyzeThirdParty(),
-
-            // Calculate security score
-            securityScore: 0
-        };
-
-        // Calculate overall security score
-        securityData.securityScore = calculateSecurityScore(securityData);
-
-        // Send to background script
-        chrome.runtime.sendMessage({
-            type: 'SECURITY_DATA',
-            data: securityData
-        });
-
-        return securityData;
-    }
-
-    function analyzeHeaders() {
-        // Note: Content scripts can't access response headers directly
-        // This would need to be done via the background script with webRequest API
-        // For this demo, we'll return placeholder data
-        return {
-            csp: false,
-            hsts: false,
-            xFrameOptions: false,
-            xContentTypeOptions: false,
-            referrerPolicy: false
-        };
-    }
-
-    function analyzeCookies() {
-        const cookies = document.cookie.split(';').filter(c => c.trim());
-
-        return {
-            count: cookies.length,
-            hasSecure: document.cookie.includes('Secure'),
-            hasHttpOnly: document.cookie.includes('HttpOnly'),
-            hasSameSite: document.cookie.includes('SameSite')
-        };
-    }
-
-    function analyzeForms() {
-        const forms = document.querySelectorAll('form');
-        const insecureForms = [];
-
-        forms.forEach(form => {
-            const action = form.action || window.location.href;
-            if (action.startsWith('http://')) {
-                insecureForms.push(action);
-            }
-        });
-
-        return {
-            total: forms.length,
-            insecure: insecureForms.length,
-            insecureActions: insecureForms
-        };
-    }
-
-    function checkMixedContent() {
-        const issues = [];
-
-        // Check images
-        const images = document.querySelectorAll('img[src^="http://"]');
-        if (images.length > 0) {
-            issues.push({ type: 'images', count: images.length });
-        }
-
-        // Check scripts
-        const scripts = document.querySelectorAll('script[src^="http://"]');
-        if (scripts.length > 0) {
-            issues.push({ type: 'scripts', count: scripts.length });
-        }
-
-        // Check stylesheets
-        const stylesheets = document.querySelectorAll('link[rel="stylesheet"][href^="http://"]');
-        if (stylesheets.length > 0) {
-            issues.push({ type: 'stylesheets', count: stylesheets.length });
-        }
-
-        return {
-            hasIssues: issues.length > 0,
-            issues: issues
-        };
-    }
-
-    function analyzeThirdParty() {
-        const currentDomain = window.location.hostname;
-        const thirdPartyDomains = new Set();
-
-        // Check all scripts
-        document.querySelectorAll('script[src]').forEach(script => {
-            try {
-                const url = new URL(script.src);
-                if (url.hostname !== currentDomain) {
-                    thirdPartyDomains.add(url.hostname);
-                }
-            } catch (e) {
-                // Invalid URL
-            }
-        });
-
-        // Check all iframes
-        document.querySelectorAll('iframe[src]').forEach(iframe => {
-            try {
-                const url = new URL(iframe.src);
-                if (url.hostname !== currentDomain) {
-                    thirdPartyDomains.add(url.hostname);
-                }
-            } catch (e) {
-                // Invalid URL
-            }
-        });
-
-        return {
-            count: thirdPartyDomains.size,
-            domains: Array.from(thirdPartyDomains)
-        };
-    }
-
-    function calculateSecurityScore(data) {
-        let score = 0;
-
-        // HTTPS (40 points)
-        if (data.isHTTPS) {
-            score += 40;
-        }
-
-        // No insecure forms (20 points)
-        if (data.forms.insecure === 0) {
-            score += 20;
-        } else {
-            score -= data.forms.insecure * 5;
-        }
-
-        // No mixed content (20 points)
-        if (!data.mixedContent.hasIssues) {
-            score += 20;
-        } else {
-            score -= data.mixedContent.issues.length * 5;
-        }
-
-        // Reasonable number of cookies (10 points)
-        if (data.cookies.count <= 10) {
-            score += 10;
-        } else if (data.cookies.count <= 20) {
-            score += 5;
-        }
-
-        // Limited third-party resources (10 points)
-        if (data.thirdParty.count <= 5) {
-            score += 10;
-        } else if (data.thirdParty.count <= 10) {
-            score += 5;
-        }
-
-        // Clamp score between 0-100
-        return Math.max(0, Math.min(100, score));
-    }
-
-    // Run analysis when page loads
+    // Wait for page to be ready
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', analyzeSecurity);
+        document.addEventListener('DOMContentLoaded', extractArticle);
     } else {
-        analyzeSecurity();
+        extractArticle();
     }
+
+    function extractArticle() {
+        try {
+            // Clone document for Readability (it mutates the DOM)
+            const documentClone = document.cloneNode(true);
+
+            // Check if Readability is available (loaded from libs/readability.js)
+            if (typeof Readability === 'undefined') {
+                console.warn('Readability not loaded, skipping article extraction');
+                return;
+            }
+
+            // Parse with Readability
+            const reader = new Readability(documentClone);
+            const article = reader.parse();
+
+            if (article) {
+                // Article successfully extracted
+                const articleData = {
+                    title: article.title || document.title,
+                    author: article.byline || extractAuthor(),
+                    content: article.textContent,
+                    excerpt: article.excerpt,
+                    length: article.length,
+                    url: window.location.href,
+                    siteName: article.siteName || window.location.hostname,
+                    publishedTime: extractPublishDate(),
+                    wordCount: countWords(article.textContent)
+                };
+
+                // Only send if article has substantial content (>200 words)
+                if (articleData.wordCount >= 200) {
+                    chrome.runtime.sendMessage({
+                        type: 'ARTICLE_DETECTED',
+                        data: articleData
+                    });
+
+                    console.log('Article detected:', articleData.title);
+                }
+            } else {
+                console.log('No article content found on this page');
+            }
+        } catch (error) {
+            console.error('Error extracting article:', error);
+        }
+    }
+
+    function extractAuthor() {
+        // Try various meta tags for author
+        const authorMeta = document.querySelector('meta[name="author"]') ||
+            document.querySelector('meta[property="article:author"]');
+
+        if (authorMeta) {
+            return authorMeta.getAttribute('content');
+        }
+
+        return null;
+    }
+
+    function extractPublishDate() {
+        // Try various meta tags for publish date
+        const dateMeta = document.querySelector('meta[property="article:published_time"]') ||
+            document.querySelector('meta[name="date"]') ||
+            document.querySelector('meta[name="publishdate"]');
+
+        if (dateMeta) {
+            return dateMeta.getAttribute('content');
+        }
+
+        return null;
+    }
+
+    function countWords(text) {
+        return text.trim().split(/\s+/).length;
+    }
+
+    // Listen for requests to re-extract article
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        if (message.type === 'EXTRACT_ARTICLE') {
+            extractArticle();
+            sendResponse({ success: true });
+        }
+    });
 })();

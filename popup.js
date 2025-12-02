@@ -1,220 +1,276 @@
-// SecureNav Popup Script
-// Displays security information and handles user interactions
+// AI Reading Assistant Popup Logic
 
+let currentArticle = null;
+let currentSummary = null;
+let isSpeaking = false;
+let speechSynthesis = window.speechSynthesis;
+
+// DOM Elements
+const elements = {
+    apiWarning: document.getElementById('apiWarning'),
+    openSettings: document.getElementById('openSettings'),
+    articleInfo: document.getElementById('articleInfo'),
+    noArticle: document.getElementById('noArticle'),
+    summarySection: document.getElementById('summarySection'),
+    loadingState: document.getElementById('loadingState'),
+    summaryContent: document.getElementById('summaryContent'),
+    articleTitle: document.getElementById('articleTitle'),
+    articleAuthor: document.getElementById('articleAuthor'),
+    articleWords: document.getElementById('articleWords'),
+    readTime: document.getElementById('readTime'),
+    summaryMethod: document.getElementById('summaryMethod'),
+    summaryText: document.getElementById('summaryText'),
+    keyPointsSection: document.getElementById('keyPointsSection'),
+    keyPointsList: document.getElementById('keyPointsList'),
+    actions: document.getElementById('actions'),
+    summarizeBtn: document.getElementById('summarizeBtn'),
+    ttsBtn: document.getElementById('ttsBtn'),
+    saveBtn: document.getElementById('saveBtn'),
+    viewSavedBtn: document.getElementById('viewSavedBtn'),
+    settingsBtn: document.getElementById('settingsBtn')
+};
+
+// Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadSecurityData();
+    await loadArticle();
+    setupEventListeners();
+    checkAPIKey();
 });
 
-async function loadSecurityData() {
+async function loadArticle() {
     try {
         // Get current tab
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
         if (!tab || !tab.id) {
-            showError('Impossible d\'analyser cette page');
+            showNoArticle();
             return;
         }
 
-        // Check if it's a browser internal page
-        if (tab.url.startsWith('chrome://') || tab.url.startsWith('edge://') || tab.url.startsWith('about:')) {
-            showError('Les pages internes du navigateur ne peuvent pas être analysées');
-            return;
-        }
+        // Get article data from storage
+        const result = await chrome.storage.local.get([`article_${tab.id}`]);
+        currentArticle = result[`article_${tab.id}`];
 
-        // Retrieve security data from storage
-        const result = await chrome.storage.local.get([`security_${tab.id}`]);
-        const securityData = result[`security_${tab.id}`];
-
-        if (securityData) {
-            displaySecurityData(securityData);
+        if (currentArticle) {
+            displayArticle(currentArticle);
         } else {
-            // Data not yet available, inject content script manually if needed
-            try {
-                await chrome.scripting.executeScript({
-                    target: { tabId: tab.id },
-                    files: ['content.js']
-                });
-
-                // Wait a bit for analysis
-                setTimeout(async () => {
-                    const retryResult = await chrome.storage.local.get([`security_${tab.id}`]);
-                    const retryData = retryResult[`security_${tab.id}`];
-                    if (retryData) {
-                        displaySecurityData(retryData);
-                    } else {
-                        showError('Analyse en cours...');
-                    }
-                }, 1000);
-            } catch (error) {
-                console.error('Error executing content script:', error);
-                showBasicInfo(tab);
-            }
+            showNoArticle();
         }
     } catch (error) {
-        console.error('Error loading security data:', error);
-        showError('Erreur lors du chargement des données');
+        console.error('Error loading article:', error);
+        showNoArticle();
     }
 }
 
-function displaySecurityData(data) {
-    // Update security score
-    updateSecurityScore(data.securityScore);
+function displayArticle(article) {
+    elements.noArticle.style.display = 'none';
+    elements.articleInfo.style.display = 'block';
+    elements.actions.style.display = 'flex';
 
-    // Update HTTPS status
-    const httpsIcon = document.getElementById('httpsIcon');
-    const httpsStatus = document.getElementById('httpsStatus');
+    // Display article info
+    elements.articleTitle.textContent = article.title;
 
-    if (data.isHTTPS) {
-        httpsIcon.classList.add('secure');
-        httpsStatus.textContent = 'Sécurisé (HTTPS)';
-        httpsStatus.style.color = 'var(--success)';
+    if (article.author) {
+        elements.articleAuthor.textContent = article.author;
     } else {
-        httpsIcon.classList.add('danger');
-        httpsStatus.textContent = 'Non sécurisé (HTTP)';
-        httpsStatus.style.color = 'var(--danger)';
+        elements.articleAuthor.parentElement.querySelector('.separator').style.display = 'none';
+        elements.articleAuthor.style.display = 'none';
     }
 
-    // Update cookies
-    const cookieCount = document.getElementById('cookieCount');
-    cookieCount.textContent = `${data.cookies.count} cookie${data.cookies.count !== 1 ? 's' : ''}`;
+    elements.articleWords.textContent = `${article.wordCount.toLocaleString()} words`;
 
-    // Update trackers
-    const trackerCount = document.getElementById('trackerCount');
-    trackerCount.textContent = `${data.thirdParty.count} domaine${data.thirdParty.count !== 1 ? 's' : ''}`;
-
-    // Update forms
-    const formStatus = document.getElementById('formStatus');
-    if (data.forms.insecure > 0) {
-        formStatus.textContent = `${data.forms.insecure} non sécurisé${data.forms.insecure !== 1 ? 's' : ''}`;
-        formStatus.style.color = 'var(--danger)';
-    } else if (data.forms.total > 0) {
-        formStatus.textContent = `${data.forms.total} sécurisé${data.forms.total !== 1 ? 's' : ''}`;
-        formStatus.style.color = 'var(--success)';
-    } else {
-        formStatus.textContent = 'Aucun formulaire';
-        formStatus.style.color = 'var(--text-secondary)';
-    }
-
-    // Show recommendations
-    showRecommendations(data);
+    const readTime = Math.ceil(article.wordCount / 200); // Assuming 200 words/min
+    elements.readTime.textContent = `${readTime} min read`;
 }
 
-function updateSecurityScore(score) {
-    const scoreValue = document.getElementById('scoreValue');
-    const scoreLabel = document.getElementById('scoreLabel');
-    const scoreRing = document.getElementById('scoreRing');
+function showNoArticle() {
+    elements.noArticle.style.display = 'block';
+    elements.articleInfo.style.display = 'none';
+    elements.actions.style.display = 'none';
+    elements.summarySection.style.display = 'none';
+}
 
-    // Animate score
-    let currentScore = 0;
-    const duration = 1000;
-    const increment = score / (duration / 16);
+async function checkAPIKey() {
+    const { settings } = await chrome.storage.local.get(['settings']);
 
-    const animation = setInterval(() => {
-        currentScore += increment;
-        if (currentScore >= score) {
-            currentScore = score;
-            clearInterval(animation);
+    if (!settings || !settings.apiKey) {
+        elements.apiWarning.style.display = 'flex';
+    }
+}
+
+function setupEventListeners() {
+    elements.summarizeBtn.addEventListener('click', generateSummary);
+    elements.ttsBtn.addEventListener('click', toggleTTS);
+    elements.saveBtn.addEventListener('click', saveSummary);
+    elements.viewSavedBtn.addEventListener('click', openSavedSummaries);
+    elements.settingsBtn.addEventListener('click', openSettings);
+    elements.openSettings.addEventListener('click', openSettings);
+}
+
+async function generateSummary() {
+    if (!currentArticle) return;
+
+    // Show loading state
+    elements.summarySection.style.display = 'block';
+    elements.loadingState.style.display = 'block';
+    elements.summaryContent.style.display = 'none';
+    elements.summarizeBtn.disabled = true;
+
+    try {
+        // Get settings
+        const { settings } = await chrome.storage.local.get(['settings']);
+        const summaryLength = settings?.summaryLength || 'medium';
+
+        let result;
+
+        if (settings?.apiKey) {
+            // Use AI Summarization
+            try {
+                const gemini = new GeminiAPI(settings.apiKey);
+                result = await gemini.summarize(currentArticle.content, {
+                    length: summaryLength,
+                    extractKeyPoints: true
+                });
+                elements.summaryMethod.textContent = 'AI';
+            } catch (error) {
+                console.error('AI summarization failed, using fallback:', error);
+                result = await fallbackSummarization();
+            }
+        } else {
+            // Use fallback extractive summarization
+            result = await fallbackSummarization();
         }
-        scoreValue.textContent = Math.round(currentScore);
-    }, 16);
 
-    // Update ring progress
-    const circumference = 2 * Math.PI * 54;
-    const offset = circumference - (score / 100) * circumference;
-    scoreRing.style.strokeDashoffset = offset;
+        currentSummary = result;
+        displaySummary(result);
 
-    // Update color and label based on score
-    if (score >= 80) {
-        scoreRing.style.stroke = 'var(--success)';
-        scoreLabel.textContent = 'Excellente sécurité';
-        scoreLabel.className = 'score-label excellent';
-    } else if (score >= 60) {
-        scoreRing.style.stroke = 'var(--info)';
-        scoreLabel.textContent = 'Bonne sécurité';
-        scoreLabel.className = 'score-label good';
-    } else if (score >= 40) {
-        scoreRing.style.stroke = 'var(--warning)';
-        scoreLabel.textContent = 'Sécurité moyenne';
-        scoreLabel.className = 'score-label warning';
-    } else {
-        scoreRing.style.stroke = 'var(--danger)';
-        scoreLabel.textContent = 'Sécurité faible';
-        scoreLabel.className = 'score-label danger';
+    } catch (error) {
+        console.error('Error generating summary:', error);
+        alert('Failed to generate summary. Please try again.');
+    } finally {
+        elements.summarizeBtn.disabled = false;
     }
 }
 
-function showRecommendations(data) {
-    const recommendations = [];
+async function fallbackSummarization() {
+    const summarizer = new ExtractiveSummarizer();
+    const result = summarizer.summarize(currentArticle.content, {
+        sentenceCount: 5,
+        extractKeyPoints: true
+    });
+    elements.summaryMethod.textContent = 'Extractive';
+    return result;
+}
 
-    if (!data.isHTTPS) {
-        recommendations.push('Cette page n\'utilise pas HTTPS. Évitez de soumettre des informations sensibles.');
-    }
+function displaySummary(summary) {
+    elements.loadingState.style.display = 'none';
+    elements.summaryContent.style.display = 'block';
 
-    if (data.forms.insecure > 0) {
-        recommendations.push(`${data.forms.insecure} formulaire${data.forms.insecure !== 1 ? 's' : ''} envoie${data.forms.insecure === 1 ? '' : 'nt'} des données de manière non sécurisée.`);
-    }
+    // Display summary text
+    elements.summaryText.textContent = summary.summary;
 
-    if (data.mixedContent.hasIssues) {
-        recommendations.push('Cette page contient du contenu mixte (HTTP sur HTTPS), ce qui peut compromettre la sécurité.');
-    }
+    // Display key points
+    if (summary.keyPoints && summary.keyPoints.length > 0) {
+        elements.keyPointsSection.style.display = 'block';
+        elements.keyPointsList.innerHTML = '';
 
-    if (data.cookies.count > 20) {
-        recommendations.push(`${data.cookies.count} cookies détectés. Un nombre élevé peut indiquer un suivi excessif.`);
-    }
-
-    if (data.thirdParty.count > 10) {
-        recommendations.push(`${data.thirdParty.count} domaines tiers chargent du contenu. Cela peut affecter votre vie privée.`);
-    }
-
-    if (recommendations.length > 0) {
-        const recommendationsSection = document.getElementById('recommendations');
-        const recommendationsList = document.getElementById('recommendationsList');
-
-        recommendationsList.innerHTML = '';
-        recommendations.forEach(rec => {
+        summary.keyPoints.forEach(point => {
             const li = document.createElement('li');
-            li.textContent = rec;
-            recommendationsList.appendChild(li);
+            li.textContent = point;
+            elements.keyPointsList.appendChild(li);
+        });
+    } else {
+        elements.keyPointsSection.style.display = 'none';
+    }
+
+    // Enable action buttons
+    elements.ttsBtn.disabled = false;
+    elements.saveBtn.disabled = false;
+}
+
+function toggleTTS() {
+    if (!currentSummary) return;
+
+    if (isSpeaking) {
+        speechSynthesis.cancel();
+        isSpeaking = false;
+        elements.ttsBtn.classList.remove('speaking');
+        elements.ttsBtn.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" stroke="currentColor" stroke-width="2"/>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      Listen
+    `;
+    } else {
+        const utterance = new SpeechSynthesisUtterance(currentSummary.summary);
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+
+        utterance.onend = () => {
+            isSpeaking = false;
+            elements.ttsBtn.classList.remove('speaking');
+            elements.ttsBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" stroke="currentColor" stroke-width="2"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        Listen
+      `;
+        };
+
+        speechSynthesis.speak(utterance);
+        isSpeaking = true;
+        elements.ttsBtn.classList.add('speaking');
+        elements.ttsBtn.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <rect x="6" y="4" width="4" height="16" fill="currentColor"/>
+        <rect x="14" y="4" width="4" height="16" fill="currentColor"/>
+      </svg>
+      Stop
+    `;
+    }
+}
+
+async function saveSummary() {
+    if (!currentArticle || !currentSummary) return;
+
+    try {
+        const summaryData = {
+            url: currentArticle.url,
+            title: currentArticle.title,
+            author: currentArticle.author,
+            summary: currentSummary.summary,
+            keyPoints: currentSummary.keyPoints,
+            wordCount: currentArticle.wordCount
+        };
+
+        // Send to background to save
+        await chrome.runtime.sendMessage({
+            type: 'SAVE_SUMMARY',
+            data: summaryData
         });
 
-        recommendationsSection.style.display = 'block';
+        // Show feedback
+        const originalText = elements.saveBtn.innerHTML;
+        elements.saveBtn.innerHTML = '✓ Saved!';
+        elements.saveBtn.disabled = true;
+
+        setTimeout(() => {
+            elements.saveBtn.innerHTML = originalText;
+            elements.saveBtn.disabled = false;
+        }, 2000);
+
+    } catch (error) {
+        console.error('Error saving summary:', error);
+        alert('Failed to save summary');
     }
 }
 
-function showBasicInfo(tab) {
-    const isHTTPS = tab.url.startsWith('https://');
-
-    // Show basic HTTPS status
-    const httpsIcon = document.getElementById('httpsIcon');
-    const httpsStatus = document.getElementById('httpsStatus');
-
-    if (isHTTPS) {
-        httpsIcon.classList.add('secure');
-        httpsStatus.textContent = 'Sécurisé (HTTPS)';
-        httpsStatus.style.color = 'var(--success)';
-        updateSecurityScore(60);
-    } else {
-        httpsIcon.classList.add('danger');
-        httpsStatus.textContent = 'Non sécurisé (HTTP)';
-        httpsStatus.style.color = 'var(--danger)';
-        updateSecurityScore(20);
-    }
-
-    document.getElementById('cookieCount').textContent = 'Analyse...';
-    document.getElementById('trackerCount').textContent = 'Analyse...';
-    document.getElementById('formStatus').textContent = 'Analyse...';
+function openSavedSummaries() {
+    chrome.tabs.create({ url: chrome.runtime.getURL('saved.html') });
 }
 
-function showError(message) {
-    const scoreValue = document.getElementById('scoreValue');
-    const scoreLabel = document.getElementById('scoreLabel');
-
-    scoreValue.textContent = '--';
-    scoreLabel.textContent = message;
-    scoreLabel.className = 'score-label';
-
-    document.getElementById('httpsStatus').textContent = 'N/A';
-    document.getElementById('cookieCount').textContent = 'N/A';
-    document.getElementById('trackerCount').textContent = 'N/A';
-    document.getElementById('formStatus').textContent = 'N/A';
+function openSettings() {
+    chrome.runtime.openOptionsPage();
 }
