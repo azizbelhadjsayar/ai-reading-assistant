@@ -21,9 +21,6 @@
   "background": {
     "service_worker": "background.js"
   },
-  "side_panel": {
-    "default_path": "sidepanel.html"
-  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -35,7 +32,6 @@
     "activeTab",
     "storage",
     "scripting",
-    "sidePanel",
     "tts"
   ],
   "host_permissions": [

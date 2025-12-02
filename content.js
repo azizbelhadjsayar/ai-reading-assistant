@@ -13,6 +13,28 @@
 
     function extractArticle() {
         try {
+            // Skip search result pages and non-article pages
+            const url = window.location.href;
+
+            // Blacklist: pages that should NOT be processed
+            const blacklistedPatterns = [
+                /google\.(com|fr|co\.uk|ca|de|it|es)\/search/i,  // Google search results
+                /bing\.com\/search/i,                            // Bing search  
+                /yahoo\.com\/search/i,                           // Yahoo search
+                /duckduckgo\.com/i,                              // DuckDuckGo
+                /twitter\.com|x\.com/i,                          // Twitter/X feeds
+                /facebook\.com/i,                                // Facebook
+                /instagram\.com/i,                               // Instagram  
+                /reddit\.com\/r\/\w+\/?$/i,                      // Reddit subreddit pages
+                /youtube\.com/i                                  // YouTube
+            ];
+
+            // Check if URL matches blacklist
+            if (blacklistedPatterns.some(pattern => pattern.test(url))) {
+                console.log('Skipping blacklisted page (search/social):', url);
+                return;
+            }
+
             // Clone document for Readability (it mutates the DOM)
             const documentClone = document.cloneNode(true);
 
@@ -40,8 +62,9 @@
                     wordCount: countWords(article.textContent)
                 };
 
-                // Only send if article has substantial content (>200 words)
-                if (articleData.wordCount >= 200) {
+                // Only send if article has substantial content (>300 words)
+                // This filters out search results and snippet pages
+                if (articleData.wordCount >= 300) {
                     chrome.runtime.sendMessage({
                         type: 'ARTICLE_DETECTED',
                         data: articleData
