@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureNav</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L3 7V12C3 16.55 6.84 20.74 12 22C17.16 20.74 21 16.55 21 12V7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>SecureNav</span>
+      </div>
+      <div class="subtitle">Analyse de Sécurité</div>
+    </div>
+
+    <!-- Security Score -->
+    <div class="score-section">
+      <div class="score-circle">
+        <svg class="score-ring" width="120" height="120">
+          <circle class="score-ring-bg" cx="60" cy="60" r="54" />
+          <circle class="score-ring-progress" cx="60" cy="60" r="54" id="scoreRing" />
+        </svg>
+        <div class="score-value" id="scoreValue">--</div>
+      </div>
+      <div class="score-label" id="scoreLabel">Analyse en cours...</div>
+    </div>
+
+    <!-- Security Details -->
+    <div class="details-section">
+      <div class="detail-item">
+        <div class="detail-icon https-icon" id="httpsIcon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/>
+            <path d="M8 11V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V11" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="detail-content">
+          <div class="detail-label">Protocole HTTPS</div>
+          <div class="detail-value" id="httpsStatus">--</div>
+        </div>
+      </div>
+
+      <div class="detail-item">
+        <div class="detail-icon cookie-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+            <circle cx="9" cy="9" r="1.5" fill="currentColor"/>
+            <circle cx="15" cy="10" r="1.5" fill="currentColor"/>
+            <circle cx="10" cy="15" r="1.5" fill="currentColor"/>
+            <circle cx="15" cy="16" r="1.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="detail-content">
+          <div class="detail-label">Cookies</div>
+          <div class="detail-value" id="cookieCount">--</div>
+        </div>
+      </div>
+
+      <div class="detail-item">
+        <div class="detail-icon tracker-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="detail-content">
+          <div class="detail-label">Trackers Tiers</div>
+          <div class="detail-value" id="trackerCount">--</div>
+        </div>
+      </div>
+
+      <div class="detail-item">
+        <div class="detail-icon form-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" stroke-width="2"/>
+            <path d="M14 2V8H20" stroke="currentColor" stroke-width="2"/>
+            <path d="M8 13H16" stroke="currentColor" stroke-width="2"/>
+            <path d="M8 17H16" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="detail-content">
+          <div class="detail-label">Formulaires</div>
+          <div class="detail-value" id="formStatus">--</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="recommendations" id="recommendations" style="display: none;">
+      <div class="recommendations-title">⚠️ Recommandations</div>
+      <ul class="recommendations-list" id="recommendationsList"></ul>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="powered-by">Powered by <strong>NEVERHACK</strong></div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

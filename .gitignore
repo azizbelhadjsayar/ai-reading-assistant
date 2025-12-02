@@ -1,0 +1,38 @@
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node modules (if using build tools in future)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+*.zip
+*.crx
+*.pem
+
+# Temporary files
+*.tmp
+*.log
+.cache/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# IDE specific
+*.sublime-project
+*.sublime-workspace
