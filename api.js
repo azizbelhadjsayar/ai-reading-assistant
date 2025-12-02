@@ -3,9 +3,13 @@
 class GeminiAPI {
     constructor(apiKey) {
         this.apiKey = apiKey;
-        this.model = 'gemini-1.5-flash';
-        this.baseURL = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent`;
-        console.log('GeminiAPI initialized with model:', this.model);
+        this.models = [
+            'gemini-1.5-flash',
+            'gemini-1.5-flash-001',
+            'gemini-1.5-pro',
+            'gemini-pro'
+        ];
+        this.currentModelIndex = 0;
     }
 
     async summarize(text, options = {}) {
@@ -13,51 +17,62 @@ class GeminiAPI {
             throw new Error('API key not configured');
         }
 
-        const {
-            length = 'medium',
-            extractKeyPoints = true
-        } = options;
-
-        // Build prompt based on options
+        const { length = 'medium', extractKeyPoints = true } = options;
         const prompt = this.buildSummaryPrompt(text, length, extractKeyPoints);
 
-        try {
-            const response = await fetch(`${this.baseURL}?key=${this.apiKey}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: prompt
-                        }]
-                    }],
-                    generationConfig: {
-                        temperature: 0.3,
-                        maxOutputTokens: 1024,
-                    }
-                })
-            });
+        // Try models sequentially until one works
+        let lastError = null;
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error?.message || 'API request failed');
+        for (let i = 0; i < this.models.length; i++) {
+            const model = this.models[i];
+            console.log(`Attempting summarization with model: ${model}`);
+
+            try {
+                const result = await this.callApi(model, prompt);
+                console.log(`Success with model: ${model}`);
+                return result;
+            } catch (error) {
+                console.warn(`Failed with model ${model}:`, error.message);
+                lastError = error;
+
+                // If it's not a "not found" error (e.g. quota, auth), stop trying
+                if (!error.message.includes('not found') && !error.message.includes('not supported')) {
+                    throw error;
+                }
             }
-
-            const data = await response.json();
-            const generatedText = data.candidates[0]?.content?.parts[0]?.text;
-
-            if (!generatedText) {
-                throw new Error('No response from AI');
-            }
-
-            return this.parseResponse(generatedText);
-
-        } catch (error) {
-            console.error('Gemini API error:', error);
-            throw error;
         }
+
+        throw lastError || new Error('All models failed');
+    }
+
+    async callApi(model, prompt) {
+        const baseURL = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+
+        const response = await fetch(`${baseURL}?key=${this.apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    temperature: 0.3,
+                    maxOutputTokens: 1024,
+                }
+            })
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error?.message || 'API request failed');
+        }
+
+        const data = await response.json();
+        const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (!generatedText) {
+            throw new Error('No response from AI');
+        }
+
+        return this.parseResponse(generatedText);
     }
 
     buildSummaryPrompt(text, length, extractKeyPoints) {
