@@ -3,7 +3,7 @@
 class GeminiAPI {
     constructor(apiKey) {
         this.apiKey = apiKey;
-        this.baseURL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+        this.baseURL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
     }
 
     async summarize(text, options = {}) {
