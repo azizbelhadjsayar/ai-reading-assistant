@@ -37,6 +37,11 @@
 - Bullet-point format for quick scanning
 - Perfect for busy readers
 
+### 🌍 Smart Language Detection
+- Automatically detects article language (French/English)
+- Generates summaries in the same language as the content
+- No manual configuration needed
+
 ### 🎧 Text-to-Speech
 - Listen to summaries while multitasking
 - Built-in browser TTS (no external dependencies)
@@ -149,6 +154,22 @@ graph LR
     I --> J[TTS / Save options]
 ```
 
+## 🔒 Sécurité & Confidentialité
+
+**Engagement de respect de la vie privée :**
+
+✅ **Permissions minimales** : uniquement `activeTab`, `storage`, `scripting`
+✅ **Aucune collecte de données** : tout reste local dans votre navigateur
+✅ **Traitement transparent** : le texte est envoyé à Gemini AI uniquement quand vous cliquez sur "Summarize"
+✅ **Stockage local** : vos résumés sont sauvegardés localement avec chrome.storage
+✅ **Pas de tracking** : aucune analytique, aucun serveur tiers
+✅ **Code open source** : auditable par tous
+
+**Données traitées :**
+- Texte de l'article : envoyé à Gemini AI pour génération du résumé (si API activée)
+- Résumés sauvegardés : stockés localement dans votre navigateur
+- Clé API : stockée localement, jamais transmise ailleurs qu'à Google AI
+
 ## 🎨 Screenshots
 
 *Coming soon - Load extension to see it in action!*
@@ -207,6 +228,12 @@ This extension was created for the **"La Ligue des Extensions"** challenge at NE
 - ✅ Open source on GitHub
 - ✅ Clean code and documentation
 - ✅ Innovative use of AI technology
+- ✅ **Développement Sécurisé** (theme):
+  - Permissions minimales
+  - Aucune collecte de données personnelles
+  - Stockage local uniquement
+  - Code open source auditable
+  - Traitement transparent des données
 
 ## 🙏 Acknowledgments
 
