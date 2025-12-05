@@ -59,7 +59,8 @@
                     url: window.location.href,
                     siteName: article.siteName || window.location.hostname,
                     publishedTime: extractPublishDate(),
-                    wordCount: countWords(article.textContent)
+                    wordCount: countWords(article.textContent),
+                    language: detectLanguage(article.textContent)
                 };
 
                 // Only send if article has substantial content (>300 words)
@@ -107,6 +108,80 @@
 
     function countWords(text) {
         return text.trim().split(/\s+/).length;
+    }
+
+    function detectLanguage(text) {
+        // Try language attribute on <html> or meta tags first
+        const htmlLang = document.documentElement.getAttribute('lang');
+        if (htmlLang) {
+            return normalizeLanguage(htmlLang);
+        }
+
+        const metaLang = document.querySelector('meta[http-equiv="content-language"], meta[name="language"]');
+        if (metaLang && metaLang.content) {
+            return normalizeLanguage(metaLang.content);
+        }
+
+        const sample = text.slice(0, 2000).toLowerCase();
+
+        const frenchIndicators = [
+            ' le ', ' la ', ' les ', ' un ', ' une ', ' des ', ' mais ', ' ou ', ' où ', ' pas ', ' pour ',
+            ' avec ', ' comme ', ' que ', ' qui ', ' dans ', ' sur ', ' cette ', ' donc ', ' alors '
+        ];
+        const englishIndicators = [
+            ' the ', ' and ', ' with ', ' without ', ' but ', ' or ', ' not ', ' for ', ' from ', ' this ',
+            ' that ', ' which ', ' into ', ' about ', ' there ', ' their ', ' where ', ' while '
+        ];
+
+        const accentPattern = /[éèêàùâôîçïü]/;
+
+        let frenchScore = accentPattern.test(sample) ? 5 : 0;
+        let englishScore = 0;
+
+        frenchIndicators.forEach(token => {
+            frenchScore += occurrences(sample, token);
+        });
+
+        englishIndicators.forEach(token => {
+            englishScore += occurrences(sample, token);
+        });
+
+        if (frenchScore === 0 && englishScore === 0) {
+            return 'unknown';
+        }
+
+        if (frenchScore >= englishScore * 1.2) {
+            return 'fr';
+        }
+
+        if (englishScore >= frenchScore * 1.2) {
+            return 'en';
+        }
+
+        return frenchScore >= englishScore ? 'fr' : 'en';
+    }
+
+    function occurrences(text, token) {
+        let count = 0;
+        let index = text.indexOf(token);
+        while (index !== -1) {
+            count += 1;
+            index = text.indexOf(token, index + token.length);
+        }
+        return count;
+    }
+
+    function normalizeLanguage(value) {
+        const cleanValue = value.toLowerCase().split(',')[0].trim();
+
+        if (cleanValue.startsWith('fr')) {
+            return 'fr';
+        }
+        if (cleanValue.startsWith('en')) {
+            return 'en';
+        }
+
+        return 'unknown';
     }
 
     // Listen for requests to re-extract article
