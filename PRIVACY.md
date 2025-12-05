@@ -114,8 +114,9 @@ Nous nous réservons le droit de modifier cette politique. Les changements seron
 ## Contact
 
 Questions sur la confidentialité ?
-- Ouvrir une [Issue GitHub](https://github.com/votre-username/ai-reading-assistant/issues)
-- Email : votre-email@example.com
+- Ouvrir une [Issue GitHub](https://github.com/azizbelhadjsayar/ai-reading-assistant/issues)
+- Email : aziz.belhadjsayar@outlook.com
+- Équipe : GrindMAN - Nuit de l'Info 2025
 
 ## Conformité
 

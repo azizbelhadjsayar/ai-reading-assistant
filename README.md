@@ -4,7 +4,7 @@
 
 **Smart Chrome extension that uses AI to summarize articles, extract key points, and enhance your reading experience**
 
-*Developed for NEVERHACK Hackathon 2025*
+*Developed by Team GrindMAN for Nuit de l'Info 2025*
 
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-blue.svg)](https://developer.chrome.com/docs/extensions/mv3/intro/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -63,7 +63,7 @@
 
 1. **Download the extension**
    ```bash
-   git clone https://github.com/votre-username/ai-reading-assistant.git
+   git clone https://github.com/azizbelhadjsayar/ai-reading-assistant.git
    cd ai-reading-assistant
    ```
 
@@ -218,9 +218,13 @@ Contributions welcome! Please:
 
 This project is licensed under the **MIT License** - see [LICENSE](LICENSE) file.
 
-## 🏆 NEVERHACK Hackathon 2025
+## 🏆 Nuit de l'Info 2025
 
-This extension was created for the **"La Ligue des Extensions"** challenge at NEVERHACK Hackathon.
+This extension was created by **Team GrindMAN** for the **"La Ligue des Extensions"** challenge at Nuit de l'Info 2025.
+
+**Team**: GrindMAN  
+**Developer**: Aziz Belhadj Sayar  
+**Event**: Nuit de l'Info 2025
 
 **Requirements Met**:
 - ✅ Manifest V3 Chrome extension
@@ -237,7 +241,8 @@ This extension was created for the **"La Ligue des Extensions"** challenge at NE
 
 ## 🙏 Acknowledgments
 
-- **NEVERHACK** for organizing the hackathon
+- **Team GrindMAN** - Nuit de l'Info 2025
+- **Nuit de l'Info** for organizing the event
 - **Google** for Gemini AI API
 - **Mozilla** for Readability library
 - Open source community
@@ -245,15 +250,15 @@ This extension was created for the **"La Ligue des Extensions"** challenge at NE
 ## 📞 Support
 
 Found a bug? Have a feature request?
-- Open an [Issue](https://github.com/votre-username/ai-reading-assistant/issues)
-- Or contact: your-email@example.com
+- Open an [Issue](https://github.com/azizbelhadjsayar/ai-reading-assistant/issues)
+- Or contact: aziz.belhadjsayar@outlook.com
 
 ---
 
 <div align="center">
 
-**Made with 🤖 for smarter reading**
+**Made with 🤖 by Team GrindMAN for Nuit de l'Info 2025**
 
-[Documentation](README.md) • [Report Bug](issues) • [Request Feature](issues)
+[Documentation](README.md) • [Report Bug](https://github.com/azizbelhadjsayar/ai-reading-assistant/issues) • [Request Feature](https://github.com/azizbelhadjsayar/ai-reading-assistant/issues)
 
 </div>

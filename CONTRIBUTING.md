@@ -122,9 +122,9 @@ extension chrome/
 ## Questions ?
 
 N'hésitez pas à :
-- Ouvrir une [Discussion](https://github.com/votre-username/ai-reading-assistant/discussions)
+- Ouvrir une [Discussion](https://github.com/azizbelhadjsayar/ai-reading-assistant/discussions)
 - Poser vos questions dans les Issues
-- Contacter par email
+- Contacter par email : aziz.belhadjsayar@outlook.com
 
 ## Code de Conduite
 
