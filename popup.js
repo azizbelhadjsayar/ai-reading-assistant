@@ -94,7 +94,15 @@ async function checkAPIKey() {
     const { settings } = await chrome.storage.local.get(['settings']);
 
     if (!settings || !settings.apiKey) {
-        elements.apiWarning.style.display = 'flex';
+        // Set default API key on first use
+        const defaultSettings = {
+            apiKey: 'AIzaSyDiV_Mi1gCvOhq7uFovtBK4XM6AjO5ksKc',
+            summaryLength: 'medium',
+            extractKeyPoints: true,
+            autoSummarize: false
+        };
+        await chrome.storage.local.set({ settings: defaultSettings });
+        elements.apiWarning.style.display = 'none';
     }
 }
 
@@ -129,7 +137,8 @@ async function generateSummary() {
                 const gemini = new GeminiAPI(settings.apiKey);
                 result = await gemini.summarize(currentArticle.content, {
                     length: summaryLength,
-                    extractKeyPoints: true
+                    extractKeyPoints: true,
+                    language: currentArticle.language
                 });
                 elements.summaryMethod.textContent = 'AI';
             } catch (error) {
@@ -158,7 +167,10 @@ async function fallbackSummarization() {
         sentenceCount: 5,
         extractKeyPoints: true
     });
-    elements.summaryMethod.textContent = 'Extractive';
+    const languageLabel = currentArticle.language && currentArticle.language !== 'unknown'
+        ? `Extractive (${currentArticle.language.toUpperCase()})`
+        : 'Extractive';
+    elements.summaryMethod.textContent = languageLabel;
     return result;
 }
 
